@@ -1,15 +1,16 @@
+import config.TestConfig;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.given;
 
-public class FirstTest {
+public class FirstTest extends TestConfig {
 
     @Test
     public void firstTest() {
         given()
                 .log().all()
                 .when()
-                .get("https://videogamedb.uk/api/videogame")
+                .get("/videogame")
                 .then()
                 .log().all();
     }
