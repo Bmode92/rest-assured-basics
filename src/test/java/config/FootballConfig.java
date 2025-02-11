@@ -6,19 +6,16 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
-public class VideoGameConfig {
+public class FootballConfig {
 
     @BeforeClass
     public static void setup() {
-        RestAssured.port = 443;
-
         RestAssured.requestSpecification = new RequestSpecBuilder()
-                .setBaseUri("https://videogamedb.uk/")
-                .setBasePath("api/v2/")
-                .setContentType("application/json")
-                .addHeader("Accept", "application/json")
+                .setBaseUri("https://api.football-data.org")
+                .setBasePath("/v4")
+                .addHeader("X-Auth-Token", "0d96fddb90af401f8c2a72d309ee64d0")
+                .addHeader("X-Response-Control", "minified")
                 .addFilter(new RequestLoggingFilter())
                 .addFilter(new ResponseLoggingFilter())
                 .build();
