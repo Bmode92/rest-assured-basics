@@ -1,8 +1,15 @@
 import config.VideoGameConfig;
 import config.VideoGameEndpoints;
+import io.restassured.RestAssured;
+import io.restassured.matcher.RestAssuredMatchers;
+import io.restassured.module.jsv.JsonSchemaValidator;
+import io.restassured.response.Response;
+import objects.VideoGame;
 import org.junit.Test;
 
+import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.lessThan;
 
 public class VideoGamesTests extends VideoGameConfig {
 
@@ -79,5 +86,59 @@ public class VideoGamesTests extends VideoGameConfig {
         .then();
     }
 
+    @Test
+    public void videoGameSerializationByJson() {
+        VideoGame videoGame = new VideoGame("Shooter", "MyAwesomeGame", "Mature", "2018-04-04", 99);
 
+        given()
+                .body(videoGame)
+        .when()
+                .post(VideoGameEndpoints.ALL_VIDEO_GAMES)
+        .then();
+    }
+
+    @Test
+    public void convertJsonToPojo() {
+        Response response =
+                given()
+                    .pathParam("VideoGameId", 5)
+                .when()
+                    .get(VideoGameEndpoints.SINGLE_VIDEO_GAME);
+
+        VideoGame videoGame = response.getBody().as(VideoGame.class);
+        System.out.println(videoGame.toString());
+    }
+
+    @Test
+    public void testVideoGameSchemaXml() {
+        given()
+                .pathParam("videoGameId", 5)
+                .accept("application/xml")
+        .when()
+                .get(VideoGameEndpoints.SINGLE_VIDEO_GAME)
+        .then()
+                .body(RestAssuredMatchers.matchesXsd("VideoGameXSD.xsd"));
+    }
+
+    @Test
+    public void testVideoGameSchemaJson() {
+        given()
+                .pathParam("videoGameId", 5)
+        .when()
+                .get(VideoGameEndpoints.SINGLE_VIDEO_GAME)
+        .then()
+                .body(JsonSchemaValidator.matchesJsonSchemaInClasspath("VideoGameJsonSchema.json"));
+    }
+
+    @Test
+    public void captureResponseTime() {
+        long responseTime = get(VideoGameEndpoints.ALL_VIDEO_GAMES).time();
+        System.out.println("Response time in MS: " + responseTime);
+    }
+
+    @Test
+    public void assertOnResponeTime() {
+        get(VideoGameEndpoints.ALL_VIDEO_GAMES).then()
+                .time(lessThan(1000L));
+    }
 }
