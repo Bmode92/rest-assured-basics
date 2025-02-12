@@ -137,7 +137,7 @@ public class VideoGamesTests extends VideoGameConfig {
     }
 
     @Test
-    public void assertOnResponeTime() {
+    public void assertOnResponseTime() {
         get(VideoGameEndpoints.ALL_VIDEO_GAMES).then()
                 .time(lessThan(1000L));
     }
